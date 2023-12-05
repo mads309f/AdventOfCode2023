@@ -37,7 +37,7 @@ for i in range(len(cards)):
 print(score)
 
 # Bottom up DP
-score = [-1] * len(cards)
+score = [-1] * len(cards)   
 for i in range(len(cards)-1, -1, -1):
     score[i] = 1
     for j in range(i+1, i+1+cards[i]):
