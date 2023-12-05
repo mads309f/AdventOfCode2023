@@ -31,24 +31,14 @@ def get_locations(start, l, mi):
     if l <= 0:
         return []
     if mi == len(maps):
-        return [(start, l)]
+        return [start]
     locs = []
     for m in maps[mi]:
 
-        if start <= m[1] and start + l > m[1]: 
-            # call get_locations 3 times
-            
+        if start + l >= m[1] and start < m[1] + m[2]: 
             locs.extend(
                 get_locations(start, min(l, m[1] - start), mi) +
-                get_locations(m[0] + m[1] - start, min(l, m[1] + m[2] - start), mi+1) +
-                get_locations(m[1] + m[2], start + l - m[1] - m[2], mi)
-            )
-
-            return locs
-
-        if start > m[1] and start < m[1] + m[2]: 
-            locs.extend(
-                get_locations(m[0] + start - m[1], min(l, m[1] + m[2] - start), mi+1) +
+                get_locations(m[0] + abs(start - m[1]), min(l, m[1] + m[2] - start), mi+1) +
                 get_locations(m[1] + m[2], start + l - m[1] - m[2], mi)
             )
             return locs
@@ -61,9 +51,4 @@ for i in range(0, len(seeds), 2):
     loc = get_locations(seeds[i], seeds[i+1], 0)
     locations.extend(loc)
 
-
-min = -1
-for l in locations:
-    if min == -1 or l[0] < min:
-        min = l[0]
-print(min)
+print(min(locations))
