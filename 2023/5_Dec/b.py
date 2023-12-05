@@ -18,27 +18,22 @@ with open('input.txt', 'r') as f:
 for m in maps:
     m.sort(key=lambda x: x[1])
 
-# add missing ranges
-for m in maps:
-    for j in range(1, len(m)):
-        end = m[j-1][1] + m[j-1][2]
-        if end != m[j][1]:
-            m.insert(j, (end, end,  m[j][1] - end))
-
 def get_locations(start, l, depth, i):
     if l <= 0:
         return []
-    if depth == len(maps):
+    elif depth == len(maps):
         return [start]
+    elif i == len(maps[depth]) :
+        return get_locations(start, l, depth+1, 0)
 
     m = maps[depth][i]
-    if start + l >= m[1] and start < m[1] + m[2]: 
-        return (get_locations(start, min(l, m[1] - start), depth, 0) +
-                get_locations(m[0] + abs(start - m[1]), min(l, m[1] + m[2] - start), depth+1, 0) +
-                get_locations(m[1] + m[2], start + l - m[1] - m[2], depth, 0))
 
-    if i == len(maps[depth]) - 1:
-        return get_locations(start, l, depth+1, 0)
+    # if we have overlap between range and curr map range
+    if start + l >= m[1] and start < m[1] + m[2]: 
+        return ( 
+            get_locations(start, min(l, m[1] - start), depth, i+1) +
+            get_locations(m[0] + abs(start - m[1]), min(l, m[1] + m[2] - start), depth+1, 0) +
+            get_locations(m[1] + m[2], start + l - m[1] - m[2], depth, i+1))
 
     return get_locations(start, l, depth, i+1)
 
