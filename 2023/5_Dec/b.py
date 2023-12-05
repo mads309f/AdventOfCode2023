@@ -37,9 +37,6 @@ def get_locations(start, l, depth, i):
 
     return get_locations(start, l, depth, i+1)
 
-locations = []
-for i in range(0, len(seeds), 2):
-    loc = get_locations(seeds[i], seeds[i+1], 0, 0)
-    locations.extend(loc)
-
-print(min(locations))
+optimal_candidates = [min(get_locations(seeds[i], seeds[i+1], 0, 0)) 
+                        for i in range(0, len(seeds), 2)]
+print(min(optimal_candidates))
