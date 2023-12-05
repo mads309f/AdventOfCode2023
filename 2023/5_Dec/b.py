@@ -31,7 +31,7 @@ def get_locations(start, l, depth, i):
     # if we have overlap between range and curr map range
     if start + l >= m[1] and start < m[1] + m[2]: 
         return ( 
-            get_locations(start, min(l, m[1] - start), depth, i+1) +
+            get_locations(start, min(l, m[1] - start), depth+1, 0) +
             get_locations(m[0] + abs(start - m[1]), min(l, m[1] + m[2] - start), depth+1, 0) +
             get_locations(m[1] + m[2], start + l - m[1] - m[2], depth, i+1))
 
