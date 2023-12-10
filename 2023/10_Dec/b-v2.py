@@ -18,7 +18,7 @@ def out_of_bounds(r, c):
 def is_east(r, c):
     return not out_of_bounds(r, c) and pipes[r][c] in ('-','L','F','S')
 def is_west(r, c):
-    return not out_of_bounds(r, c) and pipes[r][c] in ('-','J','7','S')
+    return not out_of_bounds(r, c)and pipes[r][c] in ('-','J','7','S')
 def is_south(r, c):
     return not out_of_bounds(r, c) and pipes[r][c] in ('|','7','F','S')
 def is_north(r, c):
@@ -56,38 +56,43 @@ for dr, dc in ((-1,0),(1,0),(0,-1),(0,1)):
     if len(new_loop) > len(in_loop):
         in_loop = new_loop
 
+nlc, nlr = lc*2+1, lr*2+1
+new_map = [[False for _ in range(nlc)] for _ in range(nlr)]
 
-def is_stopped(r, c):
-    if r < -2 or r > lr*2 or c < -2 or c > lc*2:
-        return True
-    elif r % 2 == 1 and c % 2 == 1:
-        return False
-    elif r % 2 == 1:
-        return (is_south(r//2,c//2) and is_north(r//2+1,c//2) and 
-               (r//2,c//2) in in_loop and (r//2+1,c//2) in in_loop)
-    elif c % 2 == 1:
-        return (is_east(r//2,c//2) and is_west(r//2,c//2+1) and 
-               (r//2,c//2) in in_loop and (r//2,c//2+1) in in_loop)
-    else:
-        return (r//2,c//2) in in_loop
+def create_map(r, c):
+    dr, dc = r*2+1, c*2+1
+    new_map[dr][dc] = True
+    if pipes[r][c] == 'S':
+        return
+    if dc+1 < nlc:
+        new_map[dr][dc+1] = is_east(r, c)
+    if dc-1 >= 0:
+        new_map[dr][dc-1] = is_west(r, c)
+    if dr+1 < nlr:
+        new_map[dr+1][dc] = is_south(r, c)
+    if dr-1 >= 0:
+        new_map[dr-1][dc] = is_north(r, c)
 
-outside = set()
+for r, c in in_loop:
+    create_map(r, c)
+
+def is_visited(r, c):
+    return r < 0 or r >= nlr or c < 0 or c >= nlc or new_map[r][c]
+
+# dfs
 q = deque()
-q.append((-2,-2))
-
+q.append((0,0))
 while len(q) > 0:
-    (r, c) = q.pop()
-    if (r,c) in outside or is_stopped(r,c):
+    r, c = q.pop()
+    if is_visited(r, c):
         continue
-    outside.add((r,c))
-
+    new_map[r][c] = True
     for dr, dc in ((-1,0),(1,0),(0,-1),(0,1)):
-            q.append((r+dr,c+dc))
+        q.append((r+dr,c+dc))
 
-visited = set()
-for (r,c) in outside:
-    if r % 2 == 0 and c % 2 == 0 and not out_of_bounds(r//2,c//2):
-        visited.add((r//2,c//2))
-
-inside = lr*lc - len(visited) - len(in_loop)
-print(inside)
+count = 0
+for r in range(1, nlr, 2):
+    for c in range(1, nlc, 2):
+        if not new_map[r][c]:
+            count += 1
+print(count)
